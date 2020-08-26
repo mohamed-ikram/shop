@@ -5,6 +5,9 @@ import {Provider} from 'react-redux';
 import AppContainer from './navigation/ShopNavigation';
 import CartReducer from './store/reducers/cart';
 import orderReducer from './store/reducers/order';
+import 'react-native-gesture-handler';
+import {enableScreens} from 'react-native-screens';
+enableScreens();
 
 const App = () => {
   const rootReducer = combineReducers({

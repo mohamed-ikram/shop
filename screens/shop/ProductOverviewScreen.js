@@ -1,11 +1,21 @@
 import React from 'react';
-import {FlatList, StyleSheet, SafeAreaView, Platform} from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+  Button,
+  Text,
+  View,
+  ActivityIndicator,
+} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {HeaderButtons, Item} from 'react-navigation-header-buttons';
 import ProductItem from '../../components/shop/ProductItem';
 import Banner from '../../components/shop/Banner';
 import * as CartActions from '../../store/actions/cart';
 import CustomHeaderButtons from '../../components/UI/Header';
+import Colors from '../../constants/Colors';
 
 const ProductOverView = (props) => {
   const products = useSelector((state) => state.products.availableProducts);
@@ -13,23 +23,46 @@ const ProductOverView = (props) => {
   const dispatch = useDispatch();
   return (
     <SafeAreaView style={{flex: 1}}>
+      <Button title="ok" accessibilityLabel="ok" />
       <FlatList
         ListHeaderComponent={<Banner />}
+        ListEmptyComponent={() => (
+          <View>
+            <ActivityIndicator size="large" color="#00ff00" />
+            <Text>Empty</Text>
+          </View>
+        )}
         data={products}
         keyExtractor={(item) => item.id}
         renderItem={(itemData) => (
           <ProductItem
             {...itemData.item}
-            onViewDetail={() => {
+            onSelect={() => {
               props.navigation.navigate('ProductDetail', {
                 id: itemData.item.id,
                 title: itemData.item.title,
               });
-            }}
-            onAddToCart={() => {
-              dispatch(CartActions.addToCart(itemData.item));
-            }}
-          />
+            }}>
+            <Button
+              title="View Detail"
+              color={Colors.primary}
+              onPress={() => {
+                props.navigation.navigate('ProductDetail', {
+                  id: itemData.item.id,
+                  title: itemData.item.title,
+                });
+              }}
+              testID={itemData.item.title}
+              accessibilityLabel={itemData.item.title}
+            />
+            <Button
+              title="Add To Cart"
+              color={Colors.primary}
+              onPress={() => {
+                dispatch(CartActions.addToCart(itemData.item));
+              }}
+            />
+          </ProductItem>
         )}
       />
     </SafeAreaView>
@@ -39,17 +72,6 @@ const ProductOverView = (props) => {
 ProductOverView.navigationOptions = (data) => {
   return {
     headerTitle: 'ALL PRODUCTS',
-    headerLeft: (props) => (
-      <HeaderButtons HeaderButtonComponent={CustomHeaderButtons}>
-        <Item
-          title="Cart"
-          iconName={Platform.OS === 'android' ? 'menu-outline' : 'menu'}
-          onPress={() => {
-            data.navigation.toggleDrawer();
-          }}
-        />
-      </HeaderButtons>
-    ),
     headerRight: (props) => (
       <HeaderButtons HeaderButtonComponent={CustomHeaderButtons}>
         <Item
@@ -58,6 +80,9 @@ ProductOverView.navigationOptions = (data) => {
           onPress={() => {
             data.navigation.navigate('CartScreen');
           }}
+          iconSize={24}
+          testID="Cart"
+          accessibilityLabel="Cart"
         />
       </HeaderButtons>
     ),

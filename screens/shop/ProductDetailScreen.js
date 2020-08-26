@@ -30,6 +30,8 @@ const ProductDetail = (props) => {
           title="ADD TO CART"
           color={Colors.primary}
           onPress={() => dispatch(CartAction.addToCart(selectedProduct))}
+          testID={selectedProduct.title}
+          accessibilityLabel={selectedProduct.title}
         />
       </View>
       <Text style={styles.price}>${selectedProduct.price.toFixed(2)}</Text>

@@ -15,9 +15,11 @@ const CartItem = (props) => {
       </Text>
       <View style={styles.itemData}>
         <Text style={styles.title}>${props.sum.toFixed(2)}</Text>
-        <TouchableOpacity onPress={props.onRemove} style={styles.deleteBtn}>
-          <Ionicons name="trash-outline" size={20} color="red" />
-        </TouchableOpacity>
+        {props.onRemove && (
+          <TouchableOpacity onPress={props.onRemove} style={styles.deleteBtn}>
+            <Ionicons name="trash-outline" size={20} color="red" />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

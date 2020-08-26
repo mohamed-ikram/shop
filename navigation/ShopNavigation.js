@@ -10,8 +10,11 @@ import Fonts from '../constants/Fonts';
 import CartScreen from '../screens/shop/CartScreen';
 import OrderScreen from '../screens/shop/OrdersScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Super from '../screens/user/EditProductScreen';
+import EditProductScreen from '../screens/user/EditProductScreen';
 import Check from '../screens/user/check';
+import UserProductScreen from '../screens/user/UserProductScreen';
+import CustomHeaderButtons from '../components/UI/Header';
+import {HeaderButtons, Item} from 'react-navigation-header-buttons';
 
 const option = {
   headerStyle: {
@@ -21,11 +24,32 @@ const option = {
   headerBackTitleStyle: {fontFamily: Fonts.regular},
   headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
 };
+
+const Hamburger = (props) => {
+  return (
+    <HeaderButtons HeaderButtonComponent={CustomHeaderButtons}>
+      <Item
+        title="Menu"
+        iconName={Platform.OS === 'android' ? 'menu-outline' : 'menu'}
+        onPress={() => {
+          props.toggleDrawer();
+        }}
+        iconSize={24}
+        testID="Menu"
+        accessibilityLabel="Menu"
+      />
+    </HeaderButtons>
+  );
+};
+
 const ProductNavigator = createStackNavigator(
   {
     ProductOverView: {
       screen: ProductOverView,
-      path: '/home',
+      navigationOptions: ({navigation}) => ({
+        headerLeft: () => <Hamburger {...navigation} />,
+      }),
+      path: 'home',
     },
     ProductDetail: {
       screen: ProductDetail,
@@ -42,7 +66,36 @@ const ProductNavigator = createStackNavigator(
 
 const OrderNavigator = createStackNavigator(
   {
-    Order: OrderScreen,
+    Order: {
+      screen: OrderScreen,
+      navigationOptions: ({navigation}) => ({
+        headerLeft: () => <Hamburger {...navigation} />,
+      }),
+      path: 'order',
+    },
+    Check: {
+      screen: Check,
+      path: 'check',
+    },
+  },
+  {
+    defaultNavigationOptions: option,
+  },
+);
+
+const UserNavigator = createStackNavigator(
+  {
+    UserProducts: {
+      screen: UserProductScreen,
+      navigationOptions: ({navigation}) => ({
+        headerLeft: () => <Hamburger {...navigation} />,
+      }),
+      path: 'order',
+    },
+    EditProduct: {
+      screen: EditProductScreen,
+      path: 'edit',
+    },
     Check: {
       screen: Check,
       path: 'check',
@@ -73,13 +126,26 @@ const ShopNavigator = createDrawerNavigator(
       },
       path: 'order',
     },
+    User: {
+      screen: UserNavigator,
+      navigationOptions: {
+        drawerIcon: ({tintColor}) => (
+          <Ionicons
+            name="person-circle-outline"
+            size={24}
+            style={{color: tintColor}}
+          />
+        ),
+      },
+      path: 'order',
+    },
   },
   {contentOptions: {activeTintColor: Colors.primary}},
 );
 
 const createRootNavigator = createSwitchNavigator({
   splashPage: {
-    screen: Super,
+    screen: EditProductScreen,
     path: 'super',
   },
   HomePage: {
@@ -88,7 +154,7 @@ const createRootNavigator = createSwitchNavigator({
   },
 });
 
-const AppContainer = createAppContainer(createRootNavigator);
+const AppContainer = createAppContainer(ShopNavigator);
 
 export default () => {
   const prefix = 'https://www.shop.com/';

@@ -21,17 +21,6 @@ const styles = StyleSheet.create({});
 OrderScreen.navigationOptions = (data) => {
   return {
     headerTitle: 'Your Orders',
-    headerLeft: (props) => (
-      <HeaderButtons HeaderButtonComponent={CustomHeaderButtons}>
-        <Item
-          title="Cart"
-          iconName={Platform.OS === 'android' ? 'menu-outline' : 'menu'}
-          onPress={() => {
-            data.navigation.toggleDrawer();
-          }}
-        />
-      </HeaderButtons>
-    ),
   };
 };
 
