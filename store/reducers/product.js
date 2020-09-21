@@ -3,16 +3,29 @@ import {
   DELETE_PRODUCT,
   CREATE_PRODUCT,
   UPDATE_PRODUCT,
+  SET_PRODUCT,
 } from '../actionTypes/product';
 import Product from '../../modals/product';
 
-const initialState = {
-  availableProducts: PRODUCTS,
-  userProducts: PRODUCTS.filter((product) => product.ownerId === 'u1'),
-};
+// const initialState = {
+//   availableProducts: PRODUCTS,
+//   userProducts: PRODUCTS.filter((product) => product.ownerId === 'u1'),
+// };
 
+const initialState = {
+  availableProducts: [],
+  userProducts: [],
+};
 const productReducer = (state = initialState, action) => {
   switch (action.type) {
+    case SET_PRODUCT:
+      return {
+        availableProducts: action.produts,
+        userProducts: action.produts.filter(
+          (product) => product.ownerId === 'u1',
+        ),
+      };
+
     case CREATE_PRODUCT:
       const createAction = action.productData;
       const newProduct = new Product(

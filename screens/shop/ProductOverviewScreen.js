@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -16,22 +16,48 @@ import Banner from '../../components/shop/Banner';
 import * as CartActions from '../../store/actions/cart';
 import CustomHeaderButtons from '../../components/UI/Header';
 import Colors from '../../constants/Colors';
+import Axios from 'axios';
+import {fetchProducts} from '../../store/actions/product';
+import LottieView from 'lottie-react-native';
 
 const ProductOverView = (props) => {
+  const [loading, setLoading] = useState(false);
   const products = useSelector((state) => state.products.availableProducts);
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    Axios.defaults.baseURL = 'https://ikmo-reactnative.firebaseio.com/';
+    Axios.defaults.headers.post['Content-Type'] = 'application/json';
+  }, []);
+  const loadProducts = async () => {
+    setLoading(true);
+    await dispatch(fetchProducts());
+    setLoading(false);
+  };
+  useEffect(() => {
+    loadProducts();
+  }, [dispatch]);
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Button title="ok" accessibilityLabel="ok" />
       <FlatList
-        ListHeaderComponent={<Banner />}
+        ListHeaderComponent={
+          <View style={{flex: 1, backgroundColor: 'white'}}>
+            <Banner />
+          </View>
+        }
         ListEmptyComponent={() => (
-          <View>
-            <ActivityIndicator size="large" color="#00ff00" />
-            <Text>Empty</Text>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <ActivityIndicator size="large" color={Colors.accent} />
+            <LottieView source={require('../../assets/images/9704-ecommerce.json')} autoPlay loop />
           </View>
         )}
+        contentContainerStyle={{flexGrow: 1}}
         data={products}
         keyExtractor={(item) => item.id}
         renderItem={(itemData) => (
@@ -73,7 +99,9 @@ ProductOverView.navigationOptions = (data) => {
   return {
     headerTitle: 'ALL PRODUCTS',
     headerRight: (props) => (
-      <HeaderButtons HeaderButtonComponent={CustomHeaderButtons}>
+      <HeaderButtons
+        accessibilityLabel="Cart"
+        HeaderButtonComponent={CustomHeaderButtons}>
         <Item
           title="Cart"
           iconName={Platform.OS === 'android' ? 'cart-outline' : 'cart'}

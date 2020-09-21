@@ -7,6 +7,7 @@ const CustomHeaderButtons = (props) => {
   return (
     <HeaderButton
       {...props}
+      accessibilityLabel={props.title}
       IconComponent={Ionicons}
       iconSize={props.iconSize}
       color={Platform.OS == 'android' ? 'white' : Colors.primary}

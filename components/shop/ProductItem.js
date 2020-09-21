@@ -11,7 +11,6 @@ import {
   TouchableNativeFeedback,
 } from 'react-native';
 import Fonts from '../../constants/Fonts';
-import Colors from '../../constants/Colors';
 import Card from '../UI/Card';
 const ProductItem = (props) => {
   let TouchableComp = TouchableOpacity;
@@ -22,7 +21,11 @@ const ProductItem = (props) => {
     <Card styles={styles.product}>
       <TouchableComp onPress={props.onSelect} useForeground>
         <View>
-          <Image style={styles.image} source={{uri: props.imageUrl}} />
+          <Image
+            style={styles.image}
+            source={{uri: props.imageUrl}}
+            resizeMode="contain"
+          />
           <View style={styles.details}>
             <Text style={styles.title}>{props.title}</Text>
             <Text style={styles.price}>${props.price.toFixed(2)}</Text>

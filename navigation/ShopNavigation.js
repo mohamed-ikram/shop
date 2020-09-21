@@ -11,10 +11,10 @@ import CartScreen from '../screens/shop/CartScreen';
 import OrderScreen from '../screens/shop/OrdersScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EditProductScreen from '../screens/user/EditProductScreen';
-import Check from '../screens/user/check';
 import UserProductScreen from '../screens/user/UserProductScreen';
 import CustomHeaderButtons from '../components/UI/Header';
 import {HeaderButtons, Item} from 'react-navigation-header-buttons';
+import Bar from '../screens/learningComponent/bar';
 
 const option = {
   headerStyle: {
@@ -72,11 +72,7 @@ const OrderNavigator = createStackNavigator(
         headerLeft: () => <Hamburger {...navigation} />,
       }),
       path: 'order',
-    },
-    Check: {
-      screen: Check,
-      path: 'check',
-    },
+    }
   },
   {
     defaultNavigationOptions: option,
@@ -95,10 +91,6 @@ const UserNavigator = createStackNavigator(
     EditProduct: {
       screen: EditProductScreen,
       path: 'edit',
-    },
-    Check: {
-      screen: Check,
-      path: 'check',
     },
   },
   {
