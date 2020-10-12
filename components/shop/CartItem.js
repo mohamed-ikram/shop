@@ -7,17 +7,19 @@ import Fonts from '../../constants/Fonts';
 const CartItem = (props) => {
   return (
     <View style={styles.cartItem}>
-      <Text style={styles.itemData}>
+      <View style={styles.itemData}>
         <Text style={styles.quantity}>{props.quantity} </Text>
-        <Text style={styles.title} numberOfLines={1} ellipsizeMode={'middle'}>
+        <View style={{width:'80%'}}>
+        <Text style={styles.title} >
           {props.title}
         </Text>
-      </Text>
-      <View style={styles.itemData}>
+        </View>        
+      </View>
+      <View style={{...styles.itemData}}>
         <Text style={styles.title}>${props.sum.toFixed(2)}</Text>
         {props.onRemove && (
-          <TouchableOpacity onPress={props.onRemove} style={styles.deleteBtn}>
-            <Ionicons name="trash-outline" size={20} color="red" />
+          <TouchableOpacity onPress={props.onRemove} style={{paddingLeft:4}}>
+            <Ionicons name="trash-outline" size={24} color="red" />
           </TouchableOpacity>
         )}
       </View>
@@ -27,10 +29,10 @@ const CartItem = (props) => {
 
 const styles = StyleSheet.create({
   cartItem: {
-    padding: 10,
+    padding: 20,
     backgroundColor: 'white',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     marginHorizontal: 20,
   },
   itemData: {flexDirection: 'row', alignItems: 'center'},

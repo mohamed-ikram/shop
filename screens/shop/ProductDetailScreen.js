@@ -24,7 +24,11 @@ const ProductDetail = (props) => {
   const dispatch = useDispatch();
   return (
     <ScrollView>
-      <Image source={{uri: selectedProduct.imageUrl}} style={styles.image} />
+      <Image
+        source={{uri: selectedProduct.imageUrl}}
+        style={styles.image}
+        resizeMode="contain"
+      />
       <View style={{marginVertical: 10, alignItems: 'center'}}>
         <Button
           title="ADD TO CART"
@@ -50,6 +54,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 300,
+    backgroundColor: 'white',
   },
   price: {
     fontSize: 20,

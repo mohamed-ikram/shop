@@ -15,6 +15,9 @@ import UserProductScreen from '../screens/user/UserProductScreen';
 import CustomHeaderButtons from '../components/UI/Header';
 import {HeaderButtons, Item} from 'react-navigation-header-buttons';
 import Bar from '../screens/learningComponent/bar';
+import TextEditor from '../screens/learningComponent/TextEditor';
+import CnEditor from '../screens/learningComponent/cnEditor';
+import AuthScreen from '../screens/user/AuthScreen';
 
 const option = {
   headerStyle: {
@@ -58,6 +61,7 @@ const ProductNavigator = createStackNavigator(
     CartScreen: {
       screen: CartScreen,
     },
+    TextEditor: CnEditor,
   },
   {
     defaultNavigationOptions: option,
@@ -72,7 +76,7 @@ const OrderNavigator = createStackNavigator(
         headerLeft: () => <Hamburger {...navigation} />,
       }),
       path: 'order',
-    }
+    },
   },
   {
     defaultNavigationOptions: option,
@@ -146,7 +150,21 @@ const createRootNavigator = createSwitchNavigator({
   },
 });
 
-const AppContainer = createAppContainer(ShopNavigator);
+const AuthNavigator = createStackNavigator({
+  AuthHome: {
+    screen: AuthScreen,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+});
+
+const MainNavigator = createSwitchNavigator({
+  Auth: AuthNavigator,
+  Shop: ShopNavigator,
+});
+
+const AppContainer = createAppContainer(MainNavigator);
 
 export default () => {
   const prefix = 'https://www.shop.com/';

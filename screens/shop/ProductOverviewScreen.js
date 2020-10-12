@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -8,6 +8,8 @@ import {
   Text,
   View,
   ActivityIndicator,
+  RefreshControl,
+  Dimensions,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {HeaderButtons, Item} from 'react-navigation-header-buttons';
@@ -21,28 +23,58 @@ import {fetchProducts} from '../../store/actions/product';
 import LottieView from 'lottie-react-native';
 
 const ProductOverView = (props) => {
-  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [orientation, setOrientation] = useState('');
   const products = useSelector((state) => state.products.availableProducts);
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    Axios.defaults.baseURL = 'https://ikmo-reactnative.firebaseio.com/';
-    Axios.defaults.headers.post['Content-Type'] = 'application/json';
-  }, []);
-  const loadProducts = async () => {
-    setLoading(true);
-    await dispatch(fetchProducts());
-    setLoading(false);
+  const loadProducts = useCallback(async () => {
+    try {
+      await dispatch(fetchProducts());
+    } catch (err) {
+      let error = err.toString().replace(/Error: /g, '');
+      alert(error);
+    }
+  }, [dispatch, refreshing]);
+
+  const getOrientation = () => {
+    if (rootView) {
+      if (Dimensions.get('window').width < Dimensions.get('window').height) {
+        setOrientation('portrait');
+      } else {
+        setOrientation('landscape');
+      }
+    }
   };
   useEffect(() => {
+    const willFocusSub = props.navigation.addListener(
+      'willFocus',
+      loadProducts,
+    );
+    return () => {
+      willFocusSub.remove();
+    };
+  }, [loadProducts]);
+
+  useEffect(() => {
+    getOrientation();
+    Dimensions.addEventListener('change', () => {
+      getOrientation();
+    });
     loadProducts();
   }, [dispatch]);
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadProducts();
+    setRefreshing(false);
+  };
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1}} ref={(value) => (rootView = value)}>
       <FlatList
         ListHeaderComponent={
           <View style={{flex: 1, backgroundColor: 'white'}}>
+            <Text>{orientation}</Text>
             <Banner />
           </View>
         }
@@ -53,8 +85,11 @@ const ProductOverView = (props) => {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <ActivityIndicator size="large" color={Colors.accent} />
-            <LottieView source={require('../../assets/images/9704-ecommerce.json')} autoPlay loop />
+            <LottieView
+              source={require('../../assets/images/9704-ecommerce.json')}
+              autoPlay
+              loop
+            />
           </View>
         )}
         contentContainerStyle={{flexGrow: 1}}
@@ -73,7 +108,7 @@ const ProductOverView = (props) => {
               title="View Detail"
               color={Colors.primary}
               onPress={() => {
-                props.navigation.navigate('ProductDetail', {
+                props.navigation.navigate('TextEditor', {
                   id: itemData.item.id,
                   title: itemData.item.title,
                 });
@@ -90,6 +125,13 @@ const ProductOverView = (props) => {
             />
           </ProductItem>
         )}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            colors={['#007bff', '#FF0101', '#00b300']}
+            onRefresh={onRefresh}
+          />
+        }
       />
     </SafeAreaView>
   );

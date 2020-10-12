@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     height: '60%',
     width: '100%',
   },
-  title: {fontSize: 18, marginVertical: 2, fontFamily: Fonts.bold},
+  title: {fontSize: 18, marginVertical: 2, fontFamily: Fonts.bold,textAlign:"center"},
   price: {fontSize: 14, color: '#888', fontFamily: Fonts.regular},
   actions: {
     flexDirection: 'row',

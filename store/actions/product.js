@@ -9,31 +9,44 @@ import {
 
 export const fetchProducts = () => {
   return async (dispatch) => {
-    const response = await Axios.get('products.json');
-    const productsArray = [];
-    for (const key in response.data) {
-      const data = response.data[key];
-      productsArray.push(
-        new Product(
-          key,
-          'u1',
-          data.title,
-          data.imageUrl,
-          data.description,
-          data.price,
-        ),
-      );
+    try {
+      const response = await Axios.get('products.json');
+      if (!response.status) {
+        throw new Error('Something went wrong!');
+      }
+      const productsArray = [];
+      for (const key in response.data) {
+        const data = response.data[key];
+        productsArray.push(
+          new Product(
+            key,
+            'u1',
+            data.title,
+            data.imageUrl,
+            data.description,
+            data.price,
+          ),
+        );
+      }
+      dispatch({
+        type: SET_PRODUCT,
+        produts: productsArray,
+      });
+    } catch (err) {
+      throw err;
     }
-    console.log(productsArray);
-    dispatch({
-      type: SET_PRODUCT,
-      produts: productsArray,
-    });
   };
 };
 
 export const deleteProduct = (id) => {
-  return {type: DELETE_PRODUCT, pid: id};
+  console.log(id);
+  return async (dispatch) => {
+    const response = await Axios.delete(`products/${id}.json`);
+    if (!response.status) {
+      throw new Error('Something went wrong!');
+    }
+    dispatch({type: DELETE_PRODUCT, pid: id});
+  };
 };
 
 export const createProduct = (title, image, price, desc) => {
@@ -47,20 +60,37 @@ export const createProduct = (title, image, price, desc) => {
     const response = await Axios.post('products.json', JSON.stringify(produts));
     dispatch({
       type: CREATE_PRODUCT,
-      productData: produts,
+      productData: {
+        id: response.data.name,
+        ...produts,
+      },
     });
   };
 };
 
 export const updateProduct = (id, title, image, price, desc) => {
-  return {
-    type: UPDATE_PRODUCT,
-    productData: {
-      id: id,
-      title: title,
-      imageUrl: image,
-      price: price,
-      description: desc,
-    },
+  return async (dispatch) => {
+    const response = await Axios.patch(
+      `products/${id}.json`,
+      JSON.stringify({
+        title: title,
+        imageUrl: image,
+        price: price,
+        description: desc,
+      }),
+    );
+    if (!response.status) {
+      throw new Error('Something went wrong!');
+    }
+    dispatch({
+      type: UPDATE_PRODUCT,
+      productData: {
+        id: id,
+        title: title,
+        imageUrl: image,
+        price: price,
+        description: desc,
+      },
+    });
   };
 };

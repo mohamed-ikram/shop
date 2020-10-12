@@ -1,4 +1,4 @@
-import React, {useEffect, useCallback, useReducer} from 'react';
+import React, {useEffect, useCallback, useReducer, useState} from 'react';
 import {View, ScrollView, StyleSheet, Platform, Alert} from 'react-native';
 import {HeaderButtons, Item} from 'react-navigation-header-buttons';
 import {useSelector, useDispatch} from 'react-redux';
@@ -6,6 +6,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import CustomHeaderButtons from '../../components/UI/Header';
 import * as productsActions from '../../store/actions/product';
 import Input from '../../components/UI/Input';
+import LottieView from 'lottie-react-native';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -33,6 +34,7 @@ const formReducer = (state, action) => {
 };
 
 const EditProductScreen = (props) => {
+  const [loading, setLoading] = useState(false);
   const prodId = props.navigation.getParam('prodId');
   const editedProduct = useSelector((state) =>
     state.products.userProducts.find((prod) => prod.id === prodId),
@@ -53,34 +55,41 @@ const EditProductScreen = (props) => {
     },
     formIsValid: editedProduct ? true : false,
   });
-  const submitHandler = useCallback(() => {
+  const submitHandler = useCallback(async () => {
     if (!formState.formIsValid) {
       Alert.alert('Wrong input!', 'Please check the errors in the form.', [
         {text: 'Okay'},
       ]);
       return;
     }
-    if (editedProduct) {
-      dispatch(
-        productsActions.updateProduct(
-          prodId,
-          formState.inputValues.title,
-          formState.inputValues.imageUrl,
-          +formState.inputValues.price,
-          formState.inputValues.description,
-        ),
-      );
-    } else {
-      dispatch(
-        productsActions.createProduct(
-          formState.inputValues.title,
-          formState.inputValues.imageUrl,
-          +formState.inputValues.price,
-          formState.inputValues.description,
-        ),
-      );
+    setLoading(true);
+    try {
+      if (editedProduct) {
+        await dispatch(
+          productsActions.updateProduct(
+            prodId,
+            formState.inputValues.title,
+            formState.inputValues.imageUrl,
+            +formState.inputValues.price,
+            formState.inputValues.description,
+          ),
+        );
+      } else {
+        await dispatch(
+          productsActions.createProduct(
+            formState.inputValues.title,
+            formState.inputValues.imageUrl,
+            +formState.inputValues.price,
+            formState.inputValues.description,
+          ),
+        );
+      }
+      props.navigation.goBack();
+    } catch (err) {
+      const error = err.toString().replace(/Error: /g, '');
+      alert(error);
     }
-    props.navigation.goBack();
+    setLoading(false);
   }, [dispatch, prodId, formState]);
 
   useEffect(() => {
@@ -98,7 +107,22 @@ const EditProductScreen = (props) => {
     },
     [dispatchFormState],
   );
-
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <LottieView
+          source={require('../../assets/images/9704-ecommerce.json')}
+          autoPlay
+          loop
+        />
+      </View>
+    );
+  }
   return (
     <ScrollView>
       <View style={styles.form}>

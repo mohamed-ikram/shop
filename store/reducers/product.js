@@ -29,7 +29,7 @@ const productReducer = (state = initialState, action) => {
     case CREATE_PRODUCT:
       const createAction = action.productData;
       const newProduct = new Product(
-        new Date().toString(),
+        createAction.id,
         'u1',
         createAction.title,
         createAction.imageUrl,
