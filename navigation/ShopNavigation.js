@@ -1,9 +1,16 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {createStackNavigator} from 'react-navigation-stack';
-import {createDrawerNavigator} from 'react-navigation-drawer';
+import {
+  createDrawerNavigator,
+  DrawerNavigatorItems,
+} from 'react-navigation-drawer';
 import ProductOverView from '../screens/shop/ProductOverviewScreen';
-import {Platform} from 'react-native';
-import {createAppContainer, createSwitchNavigator} from 'react-navigation';
+import {Button, Platform, SafeAreaView, View} from 'react-native';
+import {
+  createAppContainer,
+  createSwitchNavigator,
+  NavigationActions,
+} from 'react-navigation';
 import ProductDetail from '../screens/shop/ProductDetailScreen';
 import Colors from '../constants/Colors';
 import Fonts from '../constants/Fonts';
@@ -18,6 +25,11 @@ import Bar from '../screens/learningComponent/bar';
 import TextEditor from '../screens/learningComponent/TextEditor';
 import CnEditor from '../screens/learningComponent/cnEditor';
 import AuthScreen from '../screens/user/AuthScreen';
+import Splash from '../screens/SplashScreen';
+import {useDispatch, useSelector} from 'react-redux';
+import {logOut} from '../store/actions/auth';
+import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const option = {
   headerStyle: {
@@ -26,6 +38,14 @@ const option = {
   headerTitleStyle: {fontFamily: Fonts.bold},
   headerBackTitleStyle: {fontFamily: Fonts.regular},
   headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
+  headerBackground: () => (
+    <LinearGradient
+      colors={['#99e5e9', '#2b4d7b']}
+      style={{flex: 1}}
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 0}}
+    />
+  ),
 };
 
 const Hamburger = (props) => {
@@ -37,7 +57,7 @@ const Hamburger = (props) => {
         onPress={() => {
           props.toggleDrawer();
         }}
-        iconSize={24}
+        iconSize={30}
         testID="Menu"
         accessibilityLabel="Menu"
       />
@@ -136,19 +156,39 @@ const ShopNavigator = createDrawerNavigator(
       path: 'order',
     },
   },
-  {contentOptions: {activeTintColor: Colors.primary}},
+  {
+    contentOptions: {activeTintColor: Colors.primary},
+    contentComponent: (props) => {
+      const dispatch = useDispatch();
+      return (
+        <View style={{flex: 1}}>
+          <SafeAreaView forceInset={{top: 'always', horizontal: 'never'}}>
+            <DrawerNavigatorItems {...props} />
+            <Button
+              title="logout"
+              color={Colors.primary}
+              onPress={() => {
+                dispatch(logOut());
+                // props.navigation.navigate('Auth');
+              }}
+            />
+          </SafeAreaView>
+        </View>
+      );
+    },
+  },
 );
 
-const createRootNavigator = createSwitchNavigator({
-  splashPage: {
-    screen: EditProductScreen,
-    path: 'super',
-  },
-  HomePage: {
-    screen: ShopNavigator,
-    path: 'initial',
-  },
-});
+// const createRootNavigator = createSwitchNavigator({
+//   splashPage: {
+//     screen: EditProductScreen,
+//     path: 'super',
+//   },
+//   HomePage: {
+//     screen: ShopNavigator,
+//     path: 'initial',
+//   },
+// });
 
 const AuthNavigator = createStackNavigator({
   AuthHome: {
@@ -160,13 +200,37 @@ const AuthNavigator = createStackNavigator({
 });
 
 const MainNavigator = createSwitchNavigator({
+  Splash: Splash,
   Auth: AuthNavigator,
   Shop: ShopNavigator,
 });
 
 const AppContainer = createAppContainer(MainNavigator);
 
-export default () => {
+export default (props) => {
+  const navRef = useRef();
+  const authToken = useSelector((state) => !!state.auth.token);
+  const token = async () => {
+    const data = await AsyncStorage.getItem('token');
+    return data;
+  };
+  useEffect(() => {
+    // if (!authToken) {
+    //     .then((res) => console.log(res))
+    //     .catch((err) => console.log(err));
+    //   navRef.current.dispatch(NavigationActions.navigate({routeName: 'Auth'}));
+    // }
+    token()
+      .then((res) => {
+        console.log(res);
+        if (!res) {
+          navRef.current.dispatch(
+            NavigationActions.navigate({routeName: 'Auth'}),
+          );
+        }
+      })
+      .catch((err) => console.log(err));
+  }, [token]);
   const prefix = 'https://www.shop.com/';
-  return <AppContainer uriPrefix={prefix} />;
+  return <AppContainer uriPrefix={prefix} ref={navRef} />;
 };

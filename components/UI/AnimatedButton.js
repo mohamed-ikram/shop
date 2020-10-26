@@ -10,7 +10,6 @@ import Colors from '../../constants/Colors';
 import Fonts from '../../constants/Fonts';
 
 const AnimatedButton = (props) => {
-  // console.log(props);
   const [animatedWidth, setAnimatedWidth] = useState(
     new Animated.Value(props.initialValue.width),
   );
@@ -33,23 +32,18 @@ const AnimatedButton = (props) => {
   };
 
   const animatedBox = async () => {
-    const stopAnimation = () => {
-      animation(props.initialValue.width, props.initialValue.height);
-      setLoading(false);
+    const stopAnimation = async () => {
+      props.loading ? null : setLoading(false);
+      // await animation(props.initialValue.width, props.initialValue.height);
+      animatedWidth.setValue(props.initialValue.width);
+      animatedHeight.setValue(props.initialValue.height);
     };
     await animation(props.finalValue.width, props.finalValue.height);
     setLoading(true);
-    if (props.validity) {
-      props.submit();
-      setTimeout(() => {
-        stopAnimation();
-      }, 1000);
-    } else {
-      alert('Enter e-mail and password correctly');
-      setTimeout(() => {
-        stopAnimation();
-      }, 1000);
-    }
+    props.submit();
+    setTimeout(() => {
+      stopAnimation();
+    }, 1000);
   };
   const animatedStyle = {
     width: animatedWidth,

@@ -8,7 +8,8 @@ import {
 } from '../actionTypes/product';
 
 export const fetchProducts = () => {
-  return async (dispatch) => {
+  return async (dispatch, state) => {
+    const userId = state().auth.userId;
     try {
       const response = await Axios.get('products.json');
       if (!response.status) {
@@ -20,7 +21,7 @@ export const fetchProducts = () => {
         productsArray.push(
           new Product(
             key,
-            'u1',
+            data.ownerId,
             data.title,
             data.imageUrl,
             data.description,
@@ -31,6 +32,7 @@ export const fetchProducts = () => {
       dispatch({
         type: SET_PRODUCT,
         produts: productsArray,
+        userProducts: productsArray.filter((prod) => prod.ownerId === userId),
       });
     } catch (err) {
       throw err;
@@ -39,9 +41,9 @@ export const fetchProducts = () => {
 };
 
 export const deleteProduct = (id) => {
-  console.log(id);
-  return async (dispatch) => {
-    const response = await Axios.delete(`products/${id}.json`);
+  return async (dispatch, state) => {
+    const token = state().auth.token;
+    const response = await Axios.delete(`products/${id}.json?auth=${token}`);
     if (!response.status) {
       throw new Error('Something went wrong!');
     }
@@ -50,14 +52,20 @@ export const deleteProduct = (id) => {
 };
 
 export const createProduct = (title, image, price, desc) => {
-  const produts = {
+  let produts = {
     title: title,
     imageUrl: image,
     price: price,
     description: desc,
   };
-  return async (dispatch) => {
-    const response = await Axios.post('products.json', JSON.stringify(produts));
+  return async (dispatch, state) => {
+    const token = state().auth.token;
+    const userId = state().auth.userId;
+    produts.ownerId = userId;
+    const response = await Axios.post(
+      `products.json?auth=${token}`,
+      JSON.stringify(produts),
+    );
     dispatch({
       type: CREATE_PRODUCT,
       productData: {
@@ -69,9 +77,10 @@ export const createProduct = (title, image, price, desc) => {
 };
 
 export const updateProduct = (id, title, image, price, desc) => {
-  return async (dispatch) => {
+  return async (dispatch, state) => {
+    const token = state().auth.token;
     const response = await Axios.patch(
-      `products/${id}.json`,
+      `products/${id}.json?auth=${token}`,
       JSON.stringify({
         title: title,
         imageUrl: image,

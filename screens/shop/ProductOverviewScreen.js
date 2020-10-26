@@ -74,7 +74,7 @@ const ProductOverView = (props) => {
       <FlatList
         ListHeaderComponent={
           <View style={{flex: 1, backgroundColor: 'white'}}>
-            <Text>{orientation}</Text>
+            {/* <Text>{orientation}</Text> */}
             <Banner />
           </View>
         }

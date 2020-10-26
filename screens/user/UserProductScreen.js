@@ -8,6 +8,7 @@ import CustomHeaderButtons from '../../components/UI/Header';
 
 const UserProductScreen = (props) => {
   const userProducts = useSelector((state) => state.products.userProducts);
+  console.log(userProducts);
   const dispatch = useDispatch();
   const editHandler = (id) => {
     props.navigation.navigate('EditProduct', {prodId: id});
@@ -43,6 +44,17 @@ const UserProductScreen = (props) => {
           />
         </ProductItem>
       )}
+      ListEmptyComponent={() => (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text>No products found, maybe start creating some?</Text>
+        </View>
+      )}
+      contentContainerStyle={{flexGrow: 1}}
     />
   );
 };

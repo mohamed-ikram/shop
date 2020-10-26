@@ -3,8 +3,11 @@ import Order from '../../modals/order';
 import {ADD_ORDER, SET_ORDER} from '../actionTypes/order';
 
 export const fetchOrder = () => {
-  return async (dispatch) => {
-    const response = await Axios.get('orders/u1.json');
+  return async (dispatch, state) => {
+    const userId = state().auth.userId;
+    alert(userId);
+    const response = await Axios.get(`orders/${userId}.json`);
+    console.log(response);
     let loadedOrder = [];
     for (let key in response.data) {
       const item = response.data[key];
@@ -16,9 +19,11 @@ export const fetchOrder = () => {
 export const addOrder = (cartItems, totalAmount) => {
   const date = new Date();
   const itemDetails = {items: cartItems, amount: totalAmount};
-  return async (dispatch) => {
+  return async (dispatch, state) => {
+    const token = state().auth.token;
+    const userId = state().auth.userId;
     const response = await Axios.post(
-      'orders/u1.json',
+      `orders/${userId}.json?auth=${token}`,
       JSON.stringify({...itemDetails, date: date.toISOString()}),
     );
     dispatch({

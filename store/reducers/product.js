@@ -21,16 +21,14 @@ const productReducer = (state = initialState, action) => {
     case SET_PRODUCT:
       return {
         availableProducts: action.produts,
-        userProducts: action.produts.filter(
-          (product) => product.ownerId === 'u1',
-        ),
+        userProducts: action.userProducts,
       };
 
     case CREATE_PRODUCT:
       const createAction = action.productData;
       const newProduct = new Product(
         createAction.id,
-        'u1',
+        createAction.ownerId,
         createAction.title,
         createAction.imageUrl,
         createAction.description,
