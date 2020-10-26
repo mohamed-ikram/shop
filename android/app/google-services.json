@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "100131721626",
+    "firebase_url": "https://ikmo-reactnative.firebaseio.com",
+    "project_id": "ikmo-reactnative",
+    "storage_bucket": "ikmo-reactnative.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:100131721626:android:9eca90f1c76f66b43cea23",
+        "android_client_info": {
+          "package_name": "com.shopapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "100131721626-7t3ctsh2i5ff9mq61tnbtd6d04tqgcuj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYkHob4oG8Kvw4KDWgQx0MN412dfo8lUs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "100131721626-7t3ctsh2i5ff9mq61tnbtd6d04tqgcuj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
